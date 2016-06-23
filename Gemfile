@@ -15,6 +15,7 @@ gem "deep_merge",                      "~>1.0.1", :git => "git://github.com/Mana
 path "gems/" do
   gem "manageiq_foreman", :require => false
   gem "manageiq-providers-amazon"
+  gem "manageiq-providers-vmware-vcd"
 end
 
 # Client-side dependencies

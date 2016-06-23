@@ -356,6 +356,10 @@ module Mixins
         ems.subscription    = params[:subscription] unless params[:subscription].blank?
       end
 
+      if ems.kind_of?(ManageIQ::Providers::VmwareVcd::CloudManager)
+        default_endpoint = {:role => :default, :hostname => hostname, :port => port}
+      end
+
       if ems.kind_of?(ManageIQ::Providers::ContainerManager)
         ems.hostname = hostname
         hawkular_hostname = hostname if hawkular_hostname.blank?

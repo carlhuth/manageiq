@@ -36,6 +36,7 @@ describe ExtManagementSystem do
       "rhevm"                       => "Red Hat Enterprise Virtualization Manager",
       "scvmm"                       => "Microsoft System Center VMM",
       "vmwarews"                    => "VMware vCenter",
+      "vmware_vcd"                  => "VMware vCloud Director",
     }
   end
 

@@ -19,6 +19,7 @@ env:
   - TEST_SUITE=javascript
   - GEM=manageiq_foreman
   - TEST_SUITE=manageiq-providers-amazon
+  - TEST_SUITE=manageiq-providers-vmware-vcd
 matrix:
   fast_finish: true
 addons:

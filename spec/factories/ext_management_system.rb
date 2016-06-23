@@ -123,6 +123,19 @@ FactoryGirl.define do
     end
   end
 
+  factory :ems_vmware_vcd,
+          :aliases => ["manageiq/providers/vmware_vcd/cloud_manager"],
+          :class   => "ManageIQ::Providers::VmwareVcd::CloudManager",
+          :parent  => :ems_cloud do
+  end
+
+  factory :ems_vmware_vcd_with_authentication,
+          :parent => :ems_vmware_vcd do
+    after(:create) do |x|
+      x.authentications << FactoryGirl.create(:authentication)
+    end
+  end
+
   # Leaf classes for ems_cloud
 
   factory :ems_amazon,
