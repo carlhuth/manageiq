@@ -40,7 +40,7 @@ module EmsRefresh::SaveInventory
       :key_pairs,
       :orchestration_stack,
     ]
-    remove_keys = child_keys + extra_infra_keys + extra_cloud_keys
+    remove_keys = child_keys + extra_infra_keys + extra_cloud_keys + [:vapp]
 
     # Query for all of the Vms once across all EMSes, to handle any moving VMs
     vms_uids = hashes.collect { |h| h[:uid_ems] }.compact
@@ -64,6 +64,7 @@ module EmsRefresh::SaveInventory
       h[:cloud_tenant_id]        = key_backup.fetch_path(:cloud_tenant, :id)
       h[:cloud_tenants]          = key_backup.fetch_path(:cloud_tenants).compact.map { |x| x[:_object] } if key_backup.fetch_path(:cloud_tenants, 0, :_object)
       h[:orchestration_stack_id] = key_backup.fetch_path(:orchestration_stack, :id)
+      h[:vapp_id]                = key_backup.fetch_path(:vapp, :id)
 
       begin
         raise MiqException::MiqIncompleteData if h[:invalid]

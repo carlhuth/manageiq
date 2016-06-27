@@ -11,6 +11,7 @@
 #     - firewall_rules
 #   - cloud_volumes
 #   - cloud_volume_snapshots
+#   - vapps
 #   - vms
 #     - storages (link)
 #     - security_groups (link)
@@ -54,6 +55,7 @@ module EmsRefresh::SaveInventoryCloud
       :security_groups,
       :cloud_volumes,
       :cloud_volume_snapshots,
+      :vapps,
       :vms,
       # TODO(lsmola) NetworkManager, once all providers are converted :floating_ips will go away
       :floating_ips,
@@ -268,5 +270,21 @@ module EmsRefresh::SaveInventoryCloud
 
     save_inventory_multi(ems.cloud_services, hashes, deletes, [:ems_ref])
     store_ids_for_new_records(ems.cloud_services, hashes, :ems_ref)
+  end
+
+  def save_vapps_inventory(ems, hashes, target = nil)
+    target = ems if target.nil?
+
+    ems.vapps.reset
+    deletes = if (target == ems)
+                :use_association
+              else
+                []
+              end
+
+    child_keys = [:ems_ref]
+
+    save_inventory_multi(ems.vapps, hashes, deletes, child_keys) # TODO more child keys
+    store_ids_for_new_records(ems.vapps, hashes, :ems_ref)
   end
 end
