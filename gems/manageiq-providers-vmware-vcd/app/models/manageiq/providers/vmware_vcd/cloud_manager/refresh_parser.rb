@@ -28,6 +28,7 @@ class ManageIQ::Providers::VmwareVcd::CloudManager::RefreshParser < ManageIQ::Pr
 
     $log.info("#{log_header}...")
 
+    get_vapps
     get_vms
 
     $log.info("#{log_header}...Complete")
@@ -37,8 +38,37 @@ class ManageIQ::Providers::VmwareVcd::CloudManager::RefreshParser < ManageIQ::Pr
 
   private
 
+  def get_vapps
+    process_collection(@inv[:vapps], :vapps) { |vapp| parse_vapp(vapp) }
+  end
+
   def get_vms
     process_collection(@inv[:vms], :vms) { |vm| parse_vm(vm) }
+  end
+
+  def parse_vapp(vapp)
+    status = vapp.human_status
+
+    uid           = vapp.id
+    name          = vapp.name
+    deployed      = vapp.deployed
+
+    new_result = {
+      :type                => ManageIQ::Providers::VmwareVcd::CloudManager::Vapp.name,
+      :uid_ems             => uid,
+      :ems_ref             => uid,
+      :name                => name,
+      :vendor              => "vmware",
+      :deployed            => deployed,
+      :raw_power_state     => status,
+      :location            => "unknown",
+
+      # :cloud_network       => nil,
+      # :cloud_subnet        => nil,
+      # :orchestration_stack => nil,
+    }
+
+    return uid, new_result
   end
 
   def parse_vm(vm)
@@ -52,7 +82,7 @@ class ManageIQ::Providers::VmwareVcd::CloudManager::RefreshParser < ManageIQ::Pr
     memory_mb     = vm.memory
     disk_capacity = vm.hard_disks.inject(0) { |sum, x| sum + x.values[0] } * 1.megabyte
 
-    vm_disks = vm.disks.all
+    vm_disks = @inv[:vms_disks][vm.id]
 
     disks = vm_disks.select { |d| d.description == "Hard disk" }.map do |disk|
       parent = vm_disks.find { |d| d.id == disk.parent }
@@ -71,6 +101,9 @@ class ManageIQ::Providers::VmwareVcd::CloudManager::RefreshParser < ManageIQ::Pr
         :ipaddress   => net[:ip_address],
       }
     end
+
+    vapp_uid = vm.vapp_id
+    vapp = @data_index.fetch_path(:vapps, vapp_uid)
 
     new_result = {
       :type                => ManageIQ::Providers::VmwareVcd::CloudManager::Vm.name,
@@ -103,6 +136,8 @@ class ManageIQ::Providers::VmwareVcd::CloudManager::RefreshParser < ManageIQ::Pr
       :cloud_network       => nil,
       :cloud_subnet        => nil,
       :orchestration_stack => nil,
+
+      :vapp                => vapp,
     }
 
     return uid, new_result

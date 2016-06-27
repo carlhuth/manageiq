@@ -5,10 +5,11 @@ class ManageIQ::Providers::VmwareVcd::CloudManager::Refresher < ManageIQ::Provid
     vcd = ems.vcd_service
 
     inv = {
-      :orgs  => [],
-      :vdcs  => [],
-      :vapps => [],
-      :vms   => [],
+      :orgs      => [],
+      :vdcs      => [],
+      :vapps     => [],
+      :vms       => [],
+      :vms_disks => {},
     }
 
     vcd.organizations.all.each do |org|
@@ -22,7 +23,7 @@ class ManageIQ::Providers::VmwareVcd::CloudManager::Refresher < ManageIQ::Provid
     end
 
     inv[:vdcs].each do |vdc|
-      vdc.vapps.all.each do |vapp|
+      vdc.vapps.all(false).each do |vapp|
         inv[:vapps].push(vapp)
       end
     end
@@ -31,6 +32,10 @@ class ManageIQ::Providers::VmwareVcd::CloudManager::Refresher < ManageIQ::Provid
       vapp.vms.all.each do |vm|
         inv[:vms].push(vm)
       end
+    end
+
+    inv[:vms].each do |vm|
+      inv[:vms_disks][vm.id] = vm.disks.all
     end
 
     targets_with_data = targets.collect do |target|

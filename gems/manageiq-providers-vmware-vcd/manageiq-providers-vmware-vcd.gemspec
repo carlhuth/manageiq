@@ -13,5 +13,5 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,lib}/**/*"]
 
-  s.add_dependency("fog-vcloud-director", ["~> 0.1.0"])
+  s.add_dependency("fog-vcloud-director", ["~> 0.1.1"])
 end
