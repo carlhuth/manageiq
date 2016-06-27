@@ -1,7 +1,8 @@
 class Vm < VmOrTemplate
   default_scope { where(:template => false) }
-  has_one :container_deployment, :through => :container_deployment_node
-  has_one :container_deployment_node
+  has_one    :container_deployment, :through => :container_deployment_node
+  has_one    :container_deployment_node
+  belongs_to :vapp, :foreign_key => "vapp_id"
   include_concern 'Operations'
 
   def self.base_model
