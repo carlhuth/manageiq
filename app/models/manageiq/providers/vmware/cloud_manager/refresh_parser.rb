@@ -52,7 +52,8 @@ class ManageIQ::Providers::Vmware::CloudManager::RefreshParser < ManageIQ::Provi
       @inv[:vms] += vapp.vms.all
     end
 
-    get_vms
+    get_stacks
+    get_instances
 
     $log.info("#{log_header}...Complete")
 
@@ -61,11 +62,37 @@ class ManageIQ::Providers::Vmware::CloudManager::RefreshParser < ManageIQ::Provi
 
   private
 
-  def get_vms
-    process_collection(@inv[:vms], :vms) { |vm| parse_vm(vm) }
+  def get_stacks
+    process_collection(@inv[:vapps], :orchestration_stacks) { |vapp| parse_stack(vapp) }
   end
 
-  def parse_vm(vm)
+  def get_instances
+    process_collection(@inv[:vms], :vms) { |vm| parse_instance(vm) }
+  end
+
+  def parse_stack(vapp)
+    status = vapp.human_status
+
+    uid      = vapp.id
+    name     = vapp.name
+
+    new_result = {
+      :type           => ManageIQ::Providers::Vmware::CloudManager::OrchestrationStack.name,
+      :ems_ref        => uid,
+      :name           => name,
+      :description    => name,
+      :status         => status,
+      :resources      => [],
+      :outputs        => [],
+      :parameters     => [],
+      :resource_group => nil,
+
+      :orchestration_template => nil
+    }
+    return uid, new_result
+  end
+
+  def parse_instance(vm)
     status = vm.status
 
     uid           = vm.id
@@ -98,6 +125,9 @@ class ManageIQ::Providers::Vmware::CloudManager::RefreshParser < ManageIQ::Provi
       }
     end
 
+    vapp_uid = vm.vapp_id
+    stack = @data_index.fetch_path(:orchestration_stacks, vapp_uid)
+
     new_result = {
       :type                => ManageIQ::Providers::Vmware::CloudManager::Vm.name,
       :uid_ems             => uid,
@@ -128,7 +158,7 @@ class ManageIQ::Providers::Vmware::CloudManager::RefreshParser < ManageIQ::Provi
 
       :cloud_network       => nil,
       :cloud_subnet        => nil,
-      :orchestration_stack => nil,
+      :orchestration_stack => stack,
     }
 
     return uid, new_result

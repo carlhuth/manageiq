@@ -39,7 +39,7 @@ describe ManageIQ::Providers::Vmware::CloudManager::Refresher do
     expect(CloudNetwork.count).to eq(0)
     expect(CloudSubnet.count).to eq(0)
     expect(OrchestrationTemplate.count).to eq(0)
-    expect(OrchestrationStack.count).to eq(0)
+    expect(OrchestrationStack.count).to eq(3)
     expect(OrchestrationStackParameter.count).to eq(0)
     expect(OrchestrationStackOutput.count).to eq(0)
     expect(OrchestrationStackResource.count).to eq(0)
@@ -77,9 +77,9 @@ describe ManageIQ::Providers::Vmware::CloudManager::Refresher do
     expect(@ems.vms_and_templates.size).to eq(6)
     expect(@ems.vms.size).to eq(6)
     expect(@ems.miq_templates.size).to eq(0)
-    expect(@ems.orchestration_stacks.size).to eq(0)
+    expect(@ems.orchestration_stacks.size).to eq(3)
 
-    expect(@ems.direct_orchestration_stacks.size).to eq(0)
+    expect(@ems.direct_orchestration_stacks.size).to eq(3)
   end
 
   def assert_specific_vm_powered_on
