@@ -1,9 +1,12 @@
 class ManageIQ::Providers::Vmware::CloudManager::OrchestrationTemplate < OrchestrationTemplate
-  def self.eligible_manager_types
-    [ManageIQ::Providers::Vmware::CloudManager]
+  def parameter_groups
+    [OrchestrationTemplate::OrchestrationParameterGroup.new(
+      :label      => "Parameters",
+      :parameters => []
+    )]
   end
 
-  def self.stack_type
-    "VMware vApp"
+  def self.eligible_manager_types
+    [ManageIQ::Providers::Vmware::CloudManager]
   end
 end

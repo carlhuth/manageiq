@@ -441,6 +441,7 @@ class TreeBuilder
     "tn"  => "Tenant",
     "u"   => "User",
     "v"   => "Vm",
+    "vap" => "ManageIQ::Providers::Vmware::CloudManager::OrchestrationTemplate",
     "vnf" => "OrchestrationTemplateVnfd",
     "wi"  => "WindowsImage",
     "xx"  => "Hash",  # For custom (non-CI) nodes, specific to each tree
