@@ -133,17 +133,22 @@ module ManageIQ::Providers
       vapp_networks = []
       @org.vdcs.each do |vdc|
         vdc.vapps.each do |vapp|
-          vapp.network_config.map do |net_conf|
-            name = net_conf[:networkName]
+          if vapp.network_config.kind_of? Array
+            vapp.network_config.map do |net_conf|
+              name = net_conf[:networkName]
 
-            next if vdc_network_names.include? name
+              next if vdc_network_names.include? name
 
-            vapp_networks << VappNetwork.new(
-              vapp_network_id(name, vapp),
-              vapp_network_name(name, vapp),
-              "application/vnd.vmware.vcloud.vAppNetwork+xml"
-            )
+              vapp_networks << VappNetwork.new(
+                  vapp_network_id(name, vapp),
+                  vapp_network_name(name, vapp),
+                  "application/vnd.vmware.vcloud.vAppNetwork+xml"
+              )
+            end
+          else
+            $log.warn("Could not read network_config for vapp '#{vapp.name}'")
           end
+
         end
       end
 
